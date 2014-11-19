@@ -1,5 +1,7 @@
 
+# TODO Сделать поддержку нескольких адресов
 class UsersDB
+	private @lang
 	def initialize(usersArr = [])
 		@usersArr = usersArr
 	end
@@ -15,8 +17,10 @@ class UsersDB
 	end
 	def selectByUsername(username)
 		user = false
+		# TODO переписать поиск оптимальней
 		@usersArr.each{
 			|element|
+			# Зачем делать to_s ?
 			if element['username'].to_s == username.to_s
 			 	user = element
 			end
@@ -41,7 +45,7 @@ class UsersDB
 	end
 end
 
-
+# Где добавления конкретного адреса, нескольких адресов одного типа (например двух телефонов) ?
 myUsersDB = UsersDB.new([{},{}])
 myUsersDB.create(56)
 myUsersDB.create(55555)
