@@ -16,16 +16,10 @@ class UsersDB
 		end
 	end
 	def selectByUsername(username)
-		user = false
-		# TODO переписать поиск оптимальней
-		@usersArr.each{
-			|element|
-			# Зачем делать to_s ? - убрал
-			if element['username'] == username
-			 	user = element
-			end
+		@usersArr.detect {
+			|e|
+			e['username'] == username
 		}
-		user
 	end
 	def addContacts(username, type, contactsArr = [])
 		if selectByUsername(username)
@@ -63,6 +57,7 @@ myUsersDB.addContacts('Pedro', 'email', ['hihihi@ya.ru', 'hohohoho@gmail.com'])
 puts myUsersDB.selectByUsername('Pedro')
 myUsersDB.addContacts('Pedro', 'email', ['haha@mail.ru', 'hehehe@yahoo.com'])
 puts myUsersDB.selectByUsername('Pedro')
+
 
 # myUsersDB.create(56)
 # myUsersDB.create(55555)
