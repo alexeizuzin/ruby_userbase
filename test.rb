@@ -1,7 +1,9 @@
+# TODO Исправить ошибку test.rb:59: invalid multibyte char (US-ASCII) (SyntaxError)
 
-# TODO Сделать поддержку нескольких адресов
+# TODO Использовать все типы данных о которых прочитал
+
+# TODO Удалять туду и комментарии после выполнения
 class UsersDB
-	# private @lang # почему-то ошибка выскакивает nil...
 	def initialize(usersArr = [])
 		@usersArr = usersArr
 	end
@@ -16,12 +18,16 @@ class UsersDB
 		end
 	end
 	def selectByUsername(username)
+    # TODO переписать согласно https://github.com/bbatsov/ruby-style-guide#single-line-blocks
 		@usersArr.detect {
 			|e|
 			e['username'] == username
 		}
 	end
 	def addContacts(username, type, contactsArr = [])
+    # TODO? почему используешь в ключах строки а не Symbol? Возможно нужно переделать если да, то почему?
+    # (этот комментарий уже был в виде гитовского комментария)
+    # Ответ жду комментарием
 		if selectByUsername(username)
 			if !selectByUsername(username)['userData'][type]
 				selectByUsername(username)['userData'][type] = []
@@ -53,10 +59,17 @@ end
 myUsersDB = UsersDB.new()
 myUsersDB.create('Pedro')
 puts myUsersDB.selectByUsername('Pedro')
-myUsersDB.addContacts('Pedro', 'email', ['hihihi@ya.ru', 'hohohoho@gmail.com'])
+myUsersDB.addContacts('Peсdro', 'email', ['hihihi@ya.ru', 'hohohoho@gmail.com'])
 puts myUsersDB.selectByUsername('Pedro')
 myUsersDB.addContacts('Pedro', 'email', ['haha@mail.ru', 'hehehe@yahoo.com'])
 puts myUsersDB.selectByUsername('Pedro')
+
+# TODO хочу чтобы можно было сделать так
+# получить client1 (например по selectByUsername) и как-то получить у него почтовый адрес => "Россия, г.Горький, ул. Космическая, 60 - 298"
+# получить client2 почтовый адрес => "Россия, г.Горький, ул. Дьяконова, 10 - 5"
+# (затем у нас переименовывается город Горький в Нижний Новгород)
+# я беру тех же client1 и client2 и город в почтовом адресе меняется
+# потом я хочу взять и выводить адреса в разных форматах то с сокращениями "г." то с полными названиями "город", "улица", "дом", "квартира"
 
 
 # myUsersDB.create(56)
