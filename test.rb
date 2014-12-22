@@ -2,58 +2,103 @@
 
 # TODO Использовать все типы данных о которых прочитал
 
-# TODO Удалять туду и комментарии после выполнения
-class UsersDB
-	def initialize(usersArr = [])
-		@usersArr = usersArr
+
+# TODO хочу чтобы можно было сделать так
+# получить client1 (например по selectByUsername) и как-то получить у него почтовый адрес => "Россия, г.Горький, ул. Космическая, 60 - 298"
+# получить client2 почтовый адрес => "Россия, г.Горький, ул. Дьяконова, 10 - 5"
+# (затем у нас переименовывается город Горький в Нижний Новгород)
+# я беру тех же client1 и client2 и город в почтовом адресе меняется
+# потом я хочу взять и выводить адреса в разных форматах то с сокращениями "г." то с полными названиями "город", "улица", "дом", "квартира"
+
+
+
+class Users
+	@@usersArr = []
+
+	def Users.selectByUsername(username)
+		@@usersArr.detect { |e| e[:username] == username }
 	end
-	def create(username)
-		if !selectByUsername(username)
-			newUser = {}
-			newUser['username'] = username
-			newUser['userData'] = {}
-			@usersArr.push(newUser)
+
+	def Users.selectByIndex(index)
+		@@usersArr[index]
+	end
+	def Users.getIndex(username)
+		@@usersArr.index(selectByUsername(username))
+	end
+
+	def Users.delete(username)
+		@@usersArr.delete(selectByUsername(username))
+	end
+	def Users.getLength
+		@@usersArr.length
+	end
+	def Users.getUserAddress(username, long = true)
+		user = Users.selectByUsername(username)
+		country = user.getAddress[:country]
+		city = user.getAddress[:cityCode] ][:name]
+		street = user.getAddress[:street]
+		homeNumber = user.getAddress[:homeNumber]
+		flatNumber = user.getAddress[:flatNumber]
+		if long
+			address = country + ', город ' + city ', улица ' + street + ', дом ' + homeNumber + ', квартира ' + flatNumber
 		else
-			puts 'This user already exists'
+			address = country + ', г. ' + city ', ул. ' + street + ', ' + homeNumber + ' - ' + flatNumber
 		end
+		
 	end
-	def selectByUsername(username)
-    # TODO переписать согласно https://github.com/bbatsov/ruby-style-guide#single-line-blocks
-		@usersArr.detect {
-			|e|
-			e['username'] == username
-		}
-	end
-	def addContacts(username, type, contactsArr = [])
-    # TODO? почему используешь в ключах строки а не Symbol? Возможно нужно переделать если да, то почему?
-    # (этот комментарий уже был в виде гитовского комментария)
-    # Ответ жду комментарием
-		if selectByUsername(username)
-			if !selectByUsername(username)['userData'][type]
-				selectByUsername(username)['userData'][type] = []
-			end
-			selectByUsername(username)['userData'][type] += contactsArr
-		else
-			puts 'This user not exists'
-		end
-	end
-	def selectByIndex(index)
-		@usersArr[index]
-	end
-	def getIndex(username)
-		@usersArr.index(selectByUsername(username))
-	end
-	def updateUsername(username, newUserArr)
+	def Users.updateUsername(username, newUserArr)
 		@usersArr[getIndex(username)] = newUserArr
 	end
 
-	def delete(username)
-		@usersArr.delete(selectByUsername(username))
+	def initialize(username)
+		@username = username
+		@userData = {}
+		@userAddress = {
+			country: 'Россия'
+			cityCode: nil
+			street: nil
+			homeNumber: nil
+			flatNumber: nil
+		}
+		@userEmails = []
+		@@usersArr.push(this) ##############################################
 	end
-	def getLength
-		@usersArr.length
+	def setEmails(arr)
+		@userEmails = arr
+	end
+	def getEmails()
+		@userEmails
+	end
+	def setAddress(arr)
+		@userEmails = arr
+	end
+	def getAddress()
+		@userEmails
 	end
 end
+
+# TODO? почему используешь в ключах строки а не Symbol? Возможно нужно переделать если да, то почему?
+# - Вначале не понял синтаксис.
+# - Переделал. Symbol'ы тут нужны по смыслу. Они не создают отдельный объект, а являются метками для значений кеша, ключами.
+
+
+citiesBase = [
+	{
+		name: 'Москва',
+		otherNames: ['Moscow', 'ДС', 'Не резиновая']
+	},
+	{
+		name: 'Санкт Петербург',
+		otherNames: ['Питер', 'Saint Petersburg', 'ДС2']
+	},
+	{
+		name: 'Нижний Новгород',
+		otherNames: ['Горький', 'Нижний', 'Nizhny Novgorod']
+	}
+
+]
+
+
 
 # Где добавления конкретного адреса, нескольких адресов одного типа (например двух телефонов) ?
 myUsersDB = UsersDB.new()
@@ -64,12 +109,9 @@ puts myUsersDB.selectByUsername('Pedro')
 myUsersDB.addContacts('Pedro', 'email', ['haha@mail.ru', 'hehehe@yahoo.com'])
 puts myUsersDB.selectByUsername('Pedro')
 
-# TODO хочу чтобы можно было сделать так
-# получить client1 (например по selectByUsername) и как-то получить у него почтовый адрес => "Россия, г.Горький, ул. Космическая, 60 - 298"
-# получить client2 почтовый адрес => "Россия, г.Горький, ул. Дьяконова, 10 - 5"
-# (затем у нас переименовывается город Горький в Нижний Новгород)
-# я беру тех же client1 и client2 и город в почтовом адресе меняется
-# потом я хочу взять и выводить адреса в разных форматах то с сокращениями "г." то с полными названиями "город", "улица", "дом", "квартира"
+
+
+
 
 
 # myUsersDB.create(56)
