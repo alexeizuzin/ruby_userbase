@@ -1,4 +1,5 @@
 # TODO Исправить ошибку test.rb:59: invalid multibyte char (US-ASCII) (SyntaxError)
+# - не вижу такой ошибки
 
 # TODO Использовать все типы данных о которых прочитал
 
@@ -9,77 +10,6 @@
 # (затем у нас переименовывается город Горький в Нижний Новгород)
 # я беру тех же client1 и client2 и город в почтовом адресе меняется
 # потом я хочу взять и выводить адреса в разных форматах то с сокращениями "г." то с полными названиями "город", "улица", "дом", "квартира"
-
-
-
-class Users
-	@@usersArr = []
-
-	def Users.selectByUsername(username)
-		@@usersArr.detect { |e| e[:username] == username }
-	end
-
-	def Users.selectByIndex(index)
-		@@usersArr[index]
-	end
-	def Users.getIndex(username)
-		@@usersArr.index(selectByUsername(username))
-	end
-
-	def Users.delete(username)
-		@@usersArr.delete(selectByUsername(username))
-	end
-	def Users.getLength
-		@@usersArr.length
-	end
-	def Users.getUserAddress(username, long = true)
-		user = Users.selectByUsername(username)
-		country = user.getAddress[:country]
-		city = user.getAddress[:cityCode] ][:name]
-		street = user.getAddress[:street]
-		homeNumber = user.getAddress[:homeNumber]
-		flatNumber = user.getAddress[:flatNumber]
-		if long
-			address = country + ', город ' + city ', улица ' + street + ', дом ' + homeNumber + ', квартира ' + flatNumber
-		else
-			address = country + ', г. ' + city ', ул. ' + street + ', ' + homeNumber + ' - ' + flatNumber
-		end
-		
-	end
-	def Users.updateUsername(username, newUserArr)
-		@usersArr[getIndex(username)] = newUserArr
-	end
-
-	def initialize(username)
-		@username = username
-		@userData = {}
-		@userAddress = {
-			country: 'Россия'
-			cityCode: nil
-			street: nil
-			homeNumber: nil
-			flatNumber: nil
-		}
-		@userEmails = []
-		@@usersArr.push(this) ##############################################
-	end
-	def setEmails(arr)
-		@userEmails = arr
-	end
-	def getEmails()
-		@userEmails
-	end
-	def setAddress(arr)
-		@userEmails = arr
-	end
-	def getAddress()
-		@userEmails
-	end
-end
-
-# TODO? почему используешь в ключах строки а не Symbol? Возможно нужно переделать если да, то почему?
-# - Вначале не понял синтаксис.
-# - Переделал. Symbol'ы тут нужны по смыслу. Они не создают отдельный объект, а являются метками для значений кеша, ключами.
 
 
 citiesBase = [
@@ -98,36 +28,138 @@ citiesBase = [
 
 ]
 
+class UsersDB
+	def initialize(arr = [])
+		@usersArr = arr
+	end
+	def addUser(obj)
+		@usersArr.push obj
+	end
+	def selectByUsername(username)
+		@usersArr.detect { |e| e.getUsername == username }
+	end
+
+	def selectByIndex(index)
+		@usersArr[index]
+	end
+	def getIndex(username)
+		@usersArr.index(selectByUsername(username))
+	end
+
+	def delete(username)
+		@usersArr.delete(selectByUsername(username))
+	end
+	def getLength
+		@usersArr.length
+	end
+end
 
 
-# Где добавления конкретного адреса, нескольких адресов одного типа (например двух телефонов) ?
-myUsersDB = UsersDB.new()
-myUsersDB.create('Pedro')
-puts myUsersDB.selectByUsername('Pedro')
-myUsersDB.addContacts('Peсdro', 'email', ['hihihi@ya.ru', 'hohohoho@gmail.com'])
-puts myUsersDB.selectByUsername('Pedro')
-myUsersDB.addContacts('Pedro', 'email', ['haha@mail.ru', 'hehehe@yahoo.com'])
-puts myUsersDB.selectByUsername('Pedro')
+class Users
+	def Users.setCitiesBase(base)
+		@@citiesBase = base
+	end
+	def Users.setUserBase(base)
+		@@userBase = base
+	end
+	def initialize(username)
+		@username = username
+		@userAddress = {
+			country: 'Россия',
+			cityCode: nil,
+			street: nil,
+			homeNumber: nil,
+			flatNumber: nil
+		}
+		@userEmails = []
+		@userPhones = []
+		@@userBase.addUser self
+	end
+	def setEmails(arr)
+		@userEmails = arr
+	end
+	def getEmails()
+		@userEmails
+	end
+	def setPhones(arr)
+		@userPhones = arr
+	end
+	def getPhones()
+		@userPhones
+	end
+	def setAddress(arr)
+		@userAddress = arr
+	end
+	def getAddress()
+		@userAddress
+	end
+	def getTextAddress(type = 'long')
+		country = @userAddress[ :country ]
+		city = @@citiesBase[ @userAddress[:cityCode] ][:name]
+		street = @userAddress[ :street ]
+		homeNumber = @userAddress[ :homeNumber ].to_s
+		flatNumber = @userAddress[ :flatNumber ].to_s
+		if type == 'long'
+			address = country + ", город " + city + ", улица " + street + ", дом " + homeNumber  + ", квартира " + flatNumber
+		end
+		if type == 'short'
+			address = country + ', г. ' + city + ', ул. ' + street + ', ' + homeNumber + ' - ' + flatNumber
+		end
+		address
+	end
+	def getUsername()
+		@username
+	end
+	def setUsername(username)
+		@username = username
+	end
+end
+
+# TODO? почему используешь в ключах строки а не Symbol? Возможно нужно переделать если да, то почему?
+# - Вначале не понял синтаксис.
+# - Переделал. Symbol'ы тут нужны по смыслу. Они не создают отдельный объект, а являются метками для значений кеша, ключами.
+
+Baza = UsersDB.new
+Users.setCitiesBase citiesBase
+Users.setUserBase Baza
+
+user2 = Users.new('Petra')
 
 
+contacts2 = user2.getAddress
+contacts2[:cityCode] = 0
+contacts2[:street] = 'Ленина'
+contacts2[:homeNumber] = 56
+contacts2[:flatNumber] = 1
 
 
+puts 'Адрес Петры: '
+puts user2.getTextAddress
+puts 'А вот покороче: '
+puts user2.getTextAddress 'short'
 
+# добавления конкретного адреса, нескольких адресов одного типа
+emails2 = user2.getEmails
+emails2.push 'alibaba@ya.ru'
+emails2.push 'alibaba@gmail.com'
+puts 'email: ' + user2.getEmails.to_s
 
-# myUsersDB.create(56)
-# myUsersDB.create(55555)
-# puts myUsersDB.selectByUsername(55555)
-# myUsersDB.updateUsername(55555, {'username' => 'five'})
-# myUsersDB.create('55555')
-# puts 'kolichestvo polzovateley: ' + myUsersDB.getLength.to_s
-# myUsersDB.delete('55555')
-# myUsersDB.create('55555')
+phones2 = user2.getPhones
+phones2.push '+7-123-34-56-78'
+phones2.push '02'
+puts 'phone: ' + user2.getPhones.to_s
 
-# puts myUsersDB.selectByIndex(0)
-# puts myUsersDB.selectByIndex(1)
-# puts myUsersDB.selectByIndex(2)
-# puts myUsersDB.selectByIndex(3)
-# puts myUsersDB.selectByIndex(4)
-# puts myUsersDB.selectByIndex(5)
-# puts myUsersDB.selectByUsername('five')
-# puts myUsersDB.selectByUsername(56)
+# добавление нового пользователя
+user4 = Users.new('Джизос Крайст')
+address4 = user4.getAddress
+address4[:cityCode] = 1
+address4[:street] = 'Сталина'
+address4[:homeNumber] = 12
+address4[:flatNumber] = 4
+emails4 = user4.getEmails
+emails4.push 'djisos@ya.ru'
+emails4.push 'djisos@gmail.com'
+
+puts 'Адреса: '
+puts Baza.selectByIndex(0).getTextAddress
+puts Baza.selectByIndex(1).getTextAddress
