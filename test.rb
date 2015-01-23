@@ -1,13 +1,5 @@
 # encoding: utf-8
 
-# TODO хочу чтобы можно было сделать так
-# получить client1 (например по selectByUsername) и как-то получить у него почтовый адрес => "Россия, г.Горький, ул. Космическая, 60 - 298"
-# получить client2 почтовый адрес => "Россия, г.Горький, ул. Дьяконова, 10 - 5"
-# (затем у нас переименовывается город Горький в Нижний Новгород)
-# я беру тех же client1 и client2 и город в почтовом адресе меняется
-# потом я хочу взять и выводить адреса в разных форматах то с сокращениями "г." то с полными названиями "город", "улица", "дом", "квартира"
-
-
 citiesBase = [
 	{
 		name: 'Москва',
@@ -69,6 +61,7 @@ class Users
 		}
 		@userEmails = []
 		@userPhones = []
+		@userCustomCity = ''
 		@@userBase.addUser self
 	end
 	def setEmails(arr)
@@ -82,6 +75,12 @@ class Users
 	end
 	def getPhones()
 		@userPhones
+	end
+	def getCustomCity()
+		@userCustomCity
+	end
+	def setCustomCity(string)
+		@userCustomCity = string
 	end
 	def setAddress(arr)
 		@userAddress = arr
@@ -102,6 +101,20 @@ class Users
 			address = country + ', г. ' + city + ', ул. ' + street + ', ' + homeNumber + ' - ' + flatNumber
 		end
 		address
+	end
+	def getCustomAddress(country = '', city = 'город ', street = 'улица ', home = 'дом ', flat = 'квартира ')
+		countryName = @userAddress[ :country ]
+		cityName = @userCustomCity
+		streetName = @userAddress[ :street ]
+		homeNumber = @userAddress[ :homeNumber ].to_s
+		flatNumber = @userAddress[ :flatNumber ].to_s
+
+		country + countryName + ", " +
+		city + cityName + ", " +
+		street + streetName + ", " +
+		home + homeNumber + ", " +
+		flat + flatNumber
+
 	end
 	def getUsername()
 		@username
@@ -155,9 +168,14 @@ emails4.push 'djisos@gmail.com'
 puts 'Адреса: '
 puts Baza.selectByIndex(0).getTextAddress
 puts Baza.selectByIndex(1).getTextAddress
+# город меняет название одной строчкой
+citiesBase[1][:name] = 'Петроград'
+puts Baza.selectByIndex(1).getTextAddress
 
-# Резолюция: не нашел как сменить старое название города на новое - 3 (неудовл), заставил удалять TODO - 0.5 .
-# Исправлены второстепенные замечания
-# Оценка 2- (да к тому же не вовремя)
-# Рекомендации: в памяти держать только текущее название города, название менять во время выполнения программы на произвольное
-# (то же касается слов 'город', 'ул.' и т.п)
+# но можно город хранить и в юзере
+Baza.selectByIndex(1).setCustomCity 'Сан Себастьян'
+puts Baza.selectByIndex(1).getCustomAddress
+Baza.selectByIndex(1).setCustomCity 'Мариуполь'
+# город переименован в юзере (наверно переехал)
+puts Baza.selectByIndex(1).getCustomAddress('country ', 'city ', 'street ', 'building: ', 'flat: ' )
+
