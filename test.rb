@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+
+
 citiesBase = [
 	{
 		name: 'Москва',
@@ -54,7 +56,6 @@ class Users
 		@username = username
 		@userAddress = {
 			country: 'Россия',
-			cityCode: nil,
 			street: nil,
 			homeNumber: nil,
 			flatNumber: nil
@@ -62,10 +63,14 @@ class Users
 		@userEmails = []
 		@userPhones = []
 		@userCustomCity = ''
+		@userCityObj = nil
 		@@userBase.addUser self
 	end
 	def setEmails(arr)
 		@userEmails = arr
+	end
+	def setCity(city)
+		@userCityObj = @@citiesBase.detect { |e| e[ :name ] == city }
 	end
 	def getEmails()
 		@userEmails
@@ -90,7 +95,7 @@ class Users
 	end
 	def getTextAddress(type = 'long')
 		country = @userAddress[ :country ]
-		city = @@citiesBase[ @userAddress[:cityCode] ][:name]
+		city = @userCityObj[:name]
 		street = @userAddress[ :street ]
 		homeNumber = @userAddress[ :homeNumber ].to_s
 		flatNumber = @userAddress[ :flatNumber ].to_s
@@ -132,10 +137,12 @@ user2 = Users.new('Petra')
 
 
 contacts2 = user2.getAddress
-contacts2[:cityCode] = 0
 contacts2[:street] = 'Ленина'
 contacts2[:homeNumber] = 56
 contacts2[:flatNumber] = 1
+
+puts Baza.selectByIndex(0)
+Baza.selectByIndex(0).setCity('Москва')
 
 
 puts 'Адрес Петры: '
@@ -157,13 +164,15 @@ puts 'phone: ' + user2.getPhones.to_s
 # добавление нового пользователя
 user4 = Users.new('Джизос Крайст')
 address4 = user4.getAddress
-address4[:cityCode] = 1
 address4[:street] = 'Сталина'
 address4[:homeNumber] = 12
 address4[:flatNumber] = 4
 emails4 = user4.getEmails
 emails4.push 'djisos@ya.ru'
 emails4.push 'djisos@gmail.com'
+
+
+Baza.selectByIndex(1).setCity('Москва')
 
 puts 'Адреса: '
 puts Baza.selectByIndex(0).getTextAddress
@@ -177,5 +186,9 @@ Baza.selectByIndex(1).setCustomCity 'Сан Себастьян'
 puts Baza.selectByIndex(1).getCustomAddress
 Baza.selectByIndex(1).setCustomCity 'Мариуполь'
 # город переименован в юзере (наверно переехал)
+puts Baza.selectByIndex(1).getCustomAddress('country ', 'city ', 'street ', 'building: ', 'flat: ' )
+
+
+
 puts Baza.selectByIndex(1).getCustomAddress('country ', 'city ', 'street ', 'building: ', 'flat: ' )
 
