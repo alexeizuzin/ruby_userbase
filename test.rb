@@ -127,6 +127,9 @@ class Users
 	def setUsername(username)
 		@username = username
 	end
+	def to_s
+		@username.to_s + ' / ' + getCustomAddress('', 'г ', '', 'д: ', 'кв: ' ) + ' / ' + @userEmails.to_s
+	end
 end
 
 Baza = UsersDB.new
@@ -190,5 +193,6 @@ puts Baza.selectByIndex(1).getCustomAddress('country ', 'city ', 'street ', 'bui
 
 
 
-puts Baza.selectByIndex(1).getCustomAddress('country ', 'city ', 'street ', 'building: ', 'flat: ' )
+puts 'to_s:'
+puts Baza.selectByIndex(1).to_s
 
