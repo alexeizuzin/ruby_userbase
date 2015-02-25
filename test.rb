@@ -1,19 +1,14 @@
 # encoding: utf-8
 
-
-
 citiesBase = [
 	{
-		name: 'Москва',
-		otherNames: ['Moscow', 'ДС', 'Не резиновая']
+		name: 'Москва'
 	},
 	{
-		name: 'Санкт Петербург',
-		otherNames: ['Питер', 'Saint Petersburg', 'ДС2']
+		name: 'Санкт Петербург'
 	},
 	{
-		name: 'Нижний Новгород',
-		otherNames: ['Горький', 'Нижний', 'Nizhny Novgorod']
+		name: 'Нижний Новгород'
 	}
 
 ]
@@ -45,12 +40,12 @@ class UsersDB
 end
 
 
-class Users
-	def Users.setCitiesBase(base)
+class User
+	def User.setCitiesBase(base)
 		@@citiesBase = base
 	end
-	def Users.setUserBase(base)
-		@@userBase = base
+	def User.setUsersBase(base)
+		@@usersBase = base
 	end
 	def initialize(username)
 		@username = username
@@ -62,9 +57,8 @@ class Users
 		}
 		@userEmails = []
 		@userPhones = []
-		@userCustomCity = ''
 		@userCityObj = nil
-		@@userBase.addUser self
+		@@usersBase.addUser self
 	end
 	def setEmails(arr)
 		@userEmails = arr
@@ -81,45 +75,25 @@ class Users
 	def getPhones()
 		@userPhones
 	end
-	def getCustomCity()
-		@userCustomCity
-	end
-	def setCustomCity(string)
-		@userCustomCity = string
-	end
 	def setAddress(arr)
 		@userAddress = arr
 	end
 	def getAddress()
 		@userAddress
 	end
-	def getTextAddress(type = 'long')
+	def getTextAddress(type = :long)
 		country = @userAddress[ :country ]
 		city = @userCityObj[:name]
 		street = @userAddress[ :street ]
 		homeNumber = @userAddress[ :homeNumber ].to_s
 		flatNumber = @userAddress[ :flatNumber ].to_s
-		if type == 'long'
+		if type == :long
 			address = country + ", город " + city + ", улица " + street + ", дом " + homeNumber  + ", квартира " + flatNumber
 		end
-		if type == 'short'
-			address = country + ', г. ' + city + ', ул. ' + street + ', ' + homeNumber + ' - ' + flatNumber
+		if type == :short
+			address = country + ', г. ' + city + ', ул. ' + street + ' ' + homeNumber + ', кв. ' + flatNumber
 		end
 		address
-	end
-	def getCustomAddress(country = '', city = 'город ', street = 'улица ', home = 'дом ', flat = 'квартира ')
-		countryName = @userAddress[ :country ]
-		cityName = @userCustomCity
-		streetName = @userAddress[ :street ]
-		homeNumber = @userAddress[ :homeNumber ].to_s
-		flatNumber = @userAddress[ :flatNumber ].to_s
-
-		country + countryName + ", " +
-		city + cityName + ", " +
-		street + streetName + ", " +
-		home + homeNumber + ", " +
-		flat + flatNumber
-
 	end
 	def getUsername()
 		@username
@@ -128,44 +102,21 @@ class Users
 		@username = username
 	end
 	def to_s
-		@username.to_s + ' / ' + getCustomAddress('', 'г ', '', 'д: ', 'кв: ' ) + ' / ' + @userEmails.to_s
+		@username.to_s + ' / ' + getTextAddress + ' / ' + @userEmails.to_s
 	end
 end
 
-Baza = UsersDB.new
-Users.setCitiesBase citiesBase
-Users.setUserBase Baza
+usersBase = UsersDB.new
+User.setCitiesBase citiesBase
+User.setUsersBase usersBase
 
-user2 = Users.new('Petra')
-
-
-contacts2 = user2.getAddress
-contacts2[:street] = 'Ленина'
-contacts2[:homeNumber] = 56
-contacts2[:flatNumber] = 1
-
-puts Baza.selectByIndex(0)
-Baza.selectByIndex(0).setCity('Москва')
-
-
-puts 'Адрес Петры: '
-puts user2.getTextAddress
-puts 'А вот покороче: '
-puts user2.getTextAddress 'short'
-
-# добавления конкретного адреса, нескольких адресов одного типа
-emails2 = user2.getEmails
-emails2.push 'alibaba@ya.ru'
-emails2.push 'alibaba@gmail.com'
-puts 'email: ' + user2.getEmails.to_s
-
-phones2 = user2.getPhones
-phones2.push '+7-123-34-56-78'
-phones2.push '02'
-puts 'phone: ' + user2.getPhones.to_s
+# create
 
 # добавление нового пользователя
-user4 = Users.new('Джизос Крайст')
+user4 = User.new('Джизос Крайст')
+
+# update
+
 address4 = user4.getAddress
 address4[:street] = 'Сталина'
 address4[:homeNumber] = 12
@@ -174,38 +125,39 @@ emails4 = user4.getEmails
 emails4.push 'djisos@ya.ru'
 emails4.push 'djisos@gmail.com'
 
+# select
 
-Baza.selectByIndex(1).setCity('Москва')
+usersBase.selectByIndex(0).setCity('Москва')
+
+# вывод
 
 puts 'Адреса: '
-puts Baza.selectByIndex(0).getTextAddress
-puts Baza.selectByIndex(1).getTextAddress
+puts usersBase.selectByIndex(0).getTextAddress
+puts 'Адреса (кратко): '
+puts usersBase.selectByIndex(0).getTextAddress(:short)
 # город меняет название одной строчкой
-citiesBase[1][:name] = 'Петроград'
-puts Baza.selectByIndex(1).getTextAddress
+citiesBase[0][:name] = 'Moscow'
 
-# но можно город хранить и в юзере
-Baza.selectByIndex(1).setCustomCity 'Сан Себастьян'
-puts Baza.selectByIndex(1).getCustomAddress
-Baza.selectByIndex(1).setCustomCity 'Мариуполь'
-# город переименован в юзере (наверно переехал)
-puts Baza.selectByIndex(1).getCustomAddress('country ', 'city ', 'street ', 'building: ', 'flat: ' )
-
-
+# to_s
 
 puts 'to_s:'
-puts Baza.selectByIndex(1).to_s
+puts usersBase.selectByIndex(0).to_s
 
 
+# delete
+
+usersBase.delete('Джизос Крайст')
+puts 'Удалился?:'
+puts usersBase.selectByIndex(0).to_s
 
 # Оценка 3 (нет to_s - 0.5, высокая связность - 1, лишний код - 0.5)
 # Указания:
-# 1. Переопределить to_s
+# 1. Переопределить to_s (ок)
 # 2. Реализовать приложенную диаграмму классов
-# 3. 'short' 'long' заменить на Обозначения
-# 4. удалить getCustomAdress, otherNames и все что с ними связано
+# 3. 'short' 'long' заменить на Обозначения (ок)
+# 4. удалить getCustomAdress, otherNames и все что с ними связано (ок)
 # 5. Разнести классы по файлам
-# 6. Разбить примеры на группы: create update select delete
+# 6. Разбить примеры на группы: create update select delete (ок)
 # И задание
 # "- реализовать класс Database, кот будет предоставлять интерфейс для получения
 # конкретного пользователя по имени (поиск), будет иметь пвозможность хранить несколько емейлов,
