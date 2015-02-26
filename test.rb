@@ -23,14 +23,6 @@ class UsersDB
 	def selectByUsername(username)
 		@usersArr.detect { |e| e.getUsername == username }
 	end
-
-	def selectByIndex(index)
-		@usersArr[index]
-	end
-	def getIndex(username)
-		@usersArr.index(selectByUsername(username))
-	end
-
 	def delete(username)
 		@usersArr.delete(selectByUsername(username))
 	end
@@ -127,27 +119,29 @@ emails4.push 'djisos@gmail.com'
 
 # select
 
-usersBase.selectByIndex(0).setCity('Москва')
+djizos = usersBase.selectByUsername('Джизос Крайст')
+djizos.setCity('Москва')
 
 # вывод
 
 puts 'Адреса: '
-puts usersBase.selectByIndex(0).getTextAddress
+puts djizos.getTextAddress
 puts 'Адреса (кратко): '
-puts usersBase.selectByIndex(0).getTextAddress(:short)
+puts djizos.getTextAddress(:short)
+
 # город меняет название одной строчкой
 citiesBase[0][:name] = 'Moscow'
 
 # to_s
 
 puts 'to_s:'
-puts usersBase.selectByIndex(0).to_s
+puts djizos.to_s
 
 
 # delete
 
 usersBase.delete('Джизос Крайст')
-puts 'Удалился?:'
+puts 'Удалился - печатаем пустое место:'
 puts usersBase.selectByIndex(0).to_s
 
 # Оценка 3 (нет to_s - 0.5, высокая связность - 1, лишний код - 0.5)
