@@ -1,6 +1,10 @@
 # encoding: utf-8
 
-citiesBase = [
+ require './user.rb'
+ require './usersdb.rb'
+ 
+
+ citiesBase = [
 	{
 		name: 'Москва'
 	},
@@ -13,99 +17,23 @@ citiesBase = [
 
 ]
 
-class UsersDB
-	def initialize(arr = [])
-		@usersArr = arr
-	end
-	def addUser(obj)
-		@usersArr.push obj
-	end
-	def selectByUsername(username)
-		@usersArr.detect { |e| e.getUsername == username }
-	end
-	def delete(username)
-		@usersArr.delete(selectByUsername(username))
-	end
-	def getLength
-		@usersArr.length
-	end
-end
 
-
-class User
-	def User.setCitiesBase(base)
-		@@citiesBase = base
-	end
-	def User.setUsersBase(base)
-		@@usersBase = base
-	end
-	def initialize(username)
-		@username = username
-		@userAddress = {
-			country: 'Россия',
-			street: nil,
-			homeNumber: nil,
-			flatNumber: nil
-		}
-		@userEmails = []
-		@userPhones = []
-		@userCityObj = nil
-		@@usersBase.addUser self
-	end
-	def setEmails(arr)
-		@userEmails = arr
-	end
-	def setCity(city)
-		@userCityObj = @@citiesBase.detect { |e| e[ :name ] == city }
-	end
-	def getEmails()
-		@userEmails
-	end
-	def setPhones(arr)
-		@userPhones = arr
-	end
-	def getPhones()
-		@userPhones
-	end
-	def setAddress(arr)
-		@userAddress = arr
-	end
-	def getAddress()
-		@userAddress
-	end
-	def getTextAddress(type = :long)
-		country = @userAddress[ :country ]
-		city = @userCityObj[:name]
-		street = @userAddress[ :street ]
-		homeNumber = @userAddress[ :homeNumber ].to_s
-		flatNumber = @userAddress[ :flatNumber ].to_s
-		if type == :long
-			address = country + ", город " + city + ", улица " + street + ", дом " + homeNumber  + ", квартира " + flatNumber
-		end
-		if type == :short
-			address = country + ', г. ' + city + ', ул. ' + street + ' ' + homeNumber + ', кв. ' + flatNumber
-		end
-		address
-	end
-	def getUsername()
-		@username
-	end
-	def setUsername(username)
-		@username = username
-	end
-	def to_s
-		@username.to_s + ' / ' + getTextAddress + ' / ' + @userEmails.to_s
-	end
-end
 
 usersBase = UsersDB.new
 User.setCitiesBase citiesBase
-User.setUsersBase usersBase
+# User.setUsersBase usersBase
+
+usersBase = UsersDB.new
+usersBase.setClassUser(User)
+
+usersBase.create 'test'
+
+
 
 # create
 
 # добавление нового пользователя
-user4 = User.new('Джизос Крайст')
+user4 = usersBase.create('Джизос Крайст')
 
 # update
 
@@ -117,9 +45,17 @@ emails4 = user4.getEmails
 emails4.push 'djisos@ya.ru'
 emails4.push 'djisos@gmail.com'
 
+phones4 = user4.getPhones
+phones4.push '89161234567'
+phones4.push '89031234567'
+
+jab4 = user4.getJabbers
+jab4.push 'dji-jabber@gmail.com'
+jab4.push 'jabber@yandex.com'
+
 # select
 
-djizos = usersBase.selectByUsername('Джизос Крайст')
+djizos = usersBase.select('Джизос Крайст')
 djizos.setCity('Москва')
 
 # вывод
@@ -142,16 +78,16 @@ puts djizos.to_s
 
 usersBase.delete('Джизос Крайст')
 puts 'Удалился - печатаем пустое место:'
-puts usersBase.selectByIndex(0).to_s
+puts usersBase.select('Джизос Крайст').to_s
 
 # Оценка 3 (нет to_s - 0.5, высокая связность - 1, лишний код - 0.5)
 # Указания:
 # 1. Переопределить to_s (ок)
-# 2. Реализовать приложенную диаграмму классов
+# 2. Реализовать приложенную диаграмму классов (?)
 # 3. 'short' 'long' заменить на Обозначения (ок)
 # 4. удалить getCustomAdress, otherNames и все что с ними связано (ок)
-# 5. Разнести классы по файлам
-# 6. Разбить примеры на группы: create update select delete (ок)
+# 5. Разнести классы по файлам (ok)
+# 6. Разбить примеры на группы: create update select delete (ок, кроме update)
 # И задание
 # "- реализовать класс Database, кот будет предоставлять интерфейс для получения
 # конкретного пользователя по имени (поиск), будет иметь пвозможность хранить несколько емейлов,
