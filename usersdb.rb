@@ -1,5 +1,5 @@
 
-class UsersDB
+class Database
 	def setClassUser(userClassName)
 		@@user = userClassName
 	end
@@ -18,9 +18,12 @@ class UsersDB
 		@usersArr.detect { |e| e.getUsername == username }
 	end
 	def delete(username)
-		@usersArr.delete(selectByUsername(username))
+		@usersArr.delete(select(username))
 	end
 	def getLength
 		@usersArr.length
+	end
+	def all
+		@usersArr
 	end
 end

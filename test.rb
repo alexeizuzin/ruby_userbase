@@ -4,6 +4,17 @@
  require './usersdb.rb'
  
 
+
+class Sender
+	def initialize(arr = [])
+		@usersArr = arr
+	end
+	def getSms(user)
+		'Уважаемый, <Имя пользователя> Просьба погасить задолженность до <индивидуальная дата погашения> С уважением Банк'
+	end
+end
+
+
  citiesBase = [
 	{
 		name: 'Москва'
@@ -17,25 +28,27 @@
 
 ]
 
-
-
-usersBase = UsersDB.new
 User.setCitiesBase citiesBase
-# User.setUsersBase usersBase
 
-usersBase = UsersDB.new
+usersBase = Database.new
 usersBase.setClassUser(User)
 
-usersBase.create 'test'
+sender = Sender.new(usersBase.all)
+
 
 
 
 # create
 
 # добавление нового пользователя
-user4 = usersBase.create('Джизос Крайст')
+usersBase.create 'test'
+usersBase.create 'test2'
+usersBase.create('Джизос Крайст')
 
-# update
+
+# update (no method)
+
+user4 = usersBase.select('Джизос Крайст')
 
 address4 = user4.getAddress
 address4[:street] = 'Сталина'
@@ -79,6 +92,9 @@ puts djizos.to_s
 usersBase.delete('Джизос Крайст')
 puts 'Удалился - печатаем пустое место:'
 puts usersBase.select('Джизос Крайст').to_s
+
+puts 'Все пользователи:'
+puts usersBase.all.to_s
 
 # Оценка 3 (нет to_s - 0.5, высокая связность - 1, лишний код - 0.5)
 # Указания:
