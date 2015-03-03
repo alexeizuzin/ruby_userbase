@@ -19,9 +19,6 @@ class User
 		@userCityObj = nil
 		# @@usersBase.addUser self
 	end
-	def setEmails(arr)
-		@userEmails = arr
-	end
 	def setCity(city)
 		@userCityObj = @@citiesBase.detect { |e| e[ :name ] == city }
 	end

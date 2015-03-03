@@ -2,17 +2,7 @@
 
  require './user.rb'
  require './usersdb.rb'
- 
-
-
-class Sender
-	def initialize(arr = [])
-		@usersArr = arr
-	end
-	def getSms(user)
-		'Уважаемый, <Имя пользователя> Просьба погасить задолженность до <индивидуальная дата погашения> С уважением Банк'
-	end
-end
+ require './sender.rb'
 
 
  citiesBase = [
@@ -32,9 +22,6 @@ User.setCitiesBase citiesBase
 
 usersBase = Database.new
 usersBase.setClassUser(User)
-
-sender = Sender.new(usersBase.all)
-
 
 
 
@@ -95,6 +82,12 @@ puts usersBase.select('Джизос Крайст').to_s
 
 puts 'Все пользователи:'
 puts usersBase.all.to_s
+
+
+puts '------ send... ------'
+sender = Sender.new(usersBase.all)
+sender.sendAll
+puts '------ sended ------'
 
 # Оценка 3 (нет to_s - 0.5, высокая связность - 1, лишний код - 0.5)
 # Указания:
