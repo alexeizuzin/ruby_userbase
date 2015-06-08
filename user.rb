@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class User
 	def User.setCitiesBase(base)
 		@@citiesBase = base
@@ -36,15 +38,20 @@ class User
 	end
 	def getTextAddress(type = :long)
 		country = @userAddress[ :country ]
-		city = @userCityObj[:name]
-		street = @userAddress[ :street ]
+		if @userCityObj
+			city = @userCityObj[:name]
+		else
+			city = 'undefined'
+		end
+		street = @userAddress[ :street ].to_s
 		homeNumber = @userAddress[ :homeNumber ].to_s
 		flatNumber = @userAddress[ :flatNumber ].to_s
 		if type == :long
 			address = country + ", город " + city + ", улица " + street + ", дом " + homeNumber  + ", квартира " + flatNumber
-		end
-		if type == :short
+		elsif type == :short
 			address = country + ', г. ' + city + ', ул. ' + street + ' ' + homeNumber + ', кв. ' + flatNumber
+		else
+			address = country + ', ' + city + ', ' + street + ' ' + homeNumber + ', кв. ' + flatNumber
 		end
 		address
 	end
@@ -55,6 +62,6 @@ class User
 		@username = username
 	end
 	def to_s
-		@username.to_s + ' / ' + getTextAddress + ' / ' + @userEmails.to_s + ' / ' + @userPhones.to_s + ' / ' + @userJabbers.to_s
+		@username.to_s + ' : ' + getTextAddress + ' / ' + @userEmails.to_s + ' / ' + @userPhones.to_s + ' / ' + @userJabbers.to_s
 	end
 end

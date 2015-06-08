@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class Sender
 	def initialize(arr = [])
 		@usersArr = arr
